@@ -7,5 +7,5 @@ endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_executable(main cpp/main.cpp)
-target_include_directories(main PRIVATE cpp/include)
+add_executable(application cpp/src/main.cpp)
+target_include_directories(application PRIVATE cpp/include)
