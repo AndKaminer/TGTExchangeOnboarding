@@ -1,3 +1,5 @@
+#pragma once
+
 #include <algorithm>
 #include <cstdint>
 #include <queue>
@@ -6,9 +8,10 @@
 #include <unordered_map>
 #include <list>
 #include <optional>
-
-#include <order.hpp>
 #include <vector>
+
+#include "order.hpp"
+
 
 namespace order_queue {
 
@@ -20,10 +23,6 @@ template <typename comparator>
 class OrderQueue {
 public:
   std::optional<order::Order> match_order(order::Order order) {
-    // if it's std::greater, it's a min heap. this means lowest price is best,
-    // so the queue is sellers. the buyer only wants sellers who are selling for 
-    // at most what they are offering
-    
     bool valid_orders_available {
       !order_levels_.empty() and
       !comparator(order_levels_.top(), order.price)
@@ -91,7 +90,6 @@ public:
     id_to_order_[order.id] = std::prev(level_list.end());
   }
   
-
 private:
   std::priority_queue<order_level_t, std::vector<order_level_t>, comparator> order_levels_ {};
   std::unordered_map<order_level_t, std::list<order::Order>> level_to_orders_ {};
