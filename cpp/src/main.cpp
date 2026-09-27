@@ -1,5 +1,7 @@
-#include <iostream>
+#include <drogon/drogon.h>
 
 int main() {
-  std::cout << "Hello world" << std::endl;
+  drogon::app()
+    .addListener("0.0.0.0", 8080)
+    .run();
 }
