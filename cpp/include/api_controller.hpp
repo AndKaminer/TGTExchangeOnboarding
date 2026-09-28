@@ -28,7 +28,7 @@ public:
 
   void place_order(const drogon::HttpRequestPtr& request, callback_t&& callback);
   void cancel_order(const drogon::HttpRequestPtr& request, callback_t&& callback,
-                    order_queue::order_id_t id);
+                    order::order_id_t id);
   void get_book(const drogon::HttpRequestPtr& request, callback_t&& callback);
 
 private:

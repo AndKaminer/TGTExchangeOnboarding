@@ -2,16 +2,21 @@
 #include "order_queue.hpp"
 #include <optional>
 #include <stop_token>
+#include <variant>
 
 namespace matching_engine {
 
 void MatchingEngine::run(std::stop_token stoken) {
   while (!stoken.stop_requested()) {
-    std::optional<order::Order> new_order {operation_queue_->pop(stoken)};
-    if (!new_order) {
+    std::optional<matching_engine::operation_t> new_operation {operation_queue_->pop(stoken)};
+    if (!new_operation) {
       break;
     }
-    place_order(new_order.value());
+    if (std::holds_alternative<order::Order>(new_operation.value())) {
+      place_order(std::get<order::Order>(new_operation.value()));
+    } else {
+      cancel_order(std::get<order::Cancel>(new_operation.value()).id_);
+    }
   }
 }
 
@@ -29,7 +34,7 @@ void MatchingEngine::place_order(order::Order order) {
   }
 }
 
-bool MatchingEngine::cancel_order(order_queue::order_id_t id) {
+bool MatchingEngine::cancel_order(order::order_id_t id) {
   return true;
 }
 

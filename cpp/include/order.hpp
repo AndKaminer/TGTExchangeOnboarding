@@ -29,4 +29,9 @@ private:
 
   };
 
+struct Cancel {
+  explicit Cancel(order_id_t id) : id_{id} {}
+  const order_id_t id_;
+};
+
 };

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <algorithm>
-#include <cstdint>
 #include <queue>
 #include <stdexcept>
 #include <format>
@@ -30,11 +29,17 @@ public:
       order_level_t level {order_levels_.top()};
       // there might be ghost levels from cancellations
       if (level_to_orders_[level].empty()) {
+        order_levels_.pop();
+        level_to_orders_.erase(level);
+        valid_orders_available = (
+          !order_levels_.empty() and
+          !comp_(order_levels_.top(), order.price)
+        );
         continue;
       }
       
       bool continue_at_level {
-        order.quantity < 0 and
+        order.quantity > 0 and
         !level_to_orders_[level].empty()
       };
       
@@ -42,7 +47,7 @@ public:
         // we want the front of the list because it's the oldest order
         order_node_t list_front {level_to_orders_[level].begin()};
       
-        unsigned int volume {std::min(order.price, list_front->quantity)};
+        unsigned int volume {std::min(order.quantity, list_front->quantity)};
         order.quantity -= volume;
         list_front->quantity -= volume;
       
@@ -51,11 +56,12 @@ public:
           level_to_orders_[level].erase(list_front);
         }
 
-        continue_at_level = order.quantity < 0 and !level_to_orders_[level].empty();
+        continue_at_level = order.quantity > 0 and !level_to_orders_[level].empty();
       }
 
       if (level_to_orders_[level].empty()) {
-        order_levels_.pop();        
+        order_levels_.pop();
+        level_to_orders_.erase(level);
       }
 
       if (order.quantity == 0) {
@@ -83,7 +89,9 @@ public:
   }
 
   void insert_order(order::Order order) {
-    order_levels_.push(order.price);
+    if (!level_to_orders_.contains(order.price)) {
+      order_levels_.push(order.price);
+    }
     std::list<order::Order>& level_list {level_to_orders_[order.price]};
     level_list.push_back(order);
     id_to_order_[order.id] = std::prev(level_list.end());
@@ -92,7 +100,7 @@ public:
 private:
   std::priority_queue<order_level_t, std::vector<order_level_t>, comparator> order_levels_ {};
   std::unordered_map<order_level_t, std::list<order::Order>> level_to_orders_ {};
-  std::unordered_map<order_id_t, order_node_t> id_to_order_ {};
+  std::unordered_map<order::order_id_t, order_node_t> id_to_order_ {};
   comparator comp_ {};
 };
 

@@ -21,3 +21,20 @@ add_executable(application
 )
 target_include_directories(application PRIVATE cpp/include)
 target_link_libraries(application PRIVATE drogon)
+
+option(EXCHANGE_BUILD_TESTS "Build the matching engine tests" ON)
+if(EXCHANGE_BUILD_TESTS)
+  enable_testing()
+  set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
+  add_subdirectory(cpp/third_party/googletest)
+
+  add_executable(matching_engine_tests
+    cpp/tests/order_queue_test.cpp
+  )
+  target_include_directories(matching_engine_tests PRIVATE cpp/include)
+  target_link_libraries(matching_engine_tests PRIVATE GTest::gtest_main)
+
+  include(GoogleTest)
+  # Timeout so a matching loop that never terminates fails instead of hanging
+  gtest_discover_tests(matching_engine_tests PROPERTIES TIMEOUT 5)
+endif()

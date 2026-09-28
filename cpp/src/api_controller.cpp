@@ -66,8 +66,8 @@ void ApiController::place_order(const drogon::HttpRequestPtr& request, callback_
 }
 
 void ApiController::cancel_order(const drogon::HttpRequestPtr& request, callback_t&& callback,
-                                 order_queue::order_id_t id) {
-  callback(make_stub_response(std::format("DELETE /orders/{}", id)));
+                                 order::order_id_t id) {
+  order_queue_ptr_->push(order::Cancel {id});
 }
 
 void ApiController::get_book(const drogon::HttpRequestPtr& request, callback_t&& callback) {
