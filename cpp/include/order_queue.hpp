@@ -16,7 +16,6 @@
 namespace order_queue {
 
 using order_level_t = unsigned int;
-using order_id_t = std::uintptr_t;
 using order_node_t = std::list<order::Order>::iterator;
 
 template <typename comparator>
@@ -73,7 +72,7 @@ public:
     return order;
   }
 
-  void cancel_order(order_id_t id) {
+  void cancel_order(order::order_id_t id) {
     if (!id_to_order_.contains(id)) {
       throw std::logic_error(std::format("Cannot cancel order with id: {}", id));
     }
