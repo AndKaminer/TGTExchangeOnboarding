@@ -1,12 +1,17 @@
 #include "matching_engine.hpp"
 #include "order_queue.hpp"
+#include <optional>
+#include <stop_token>
 
 namespace matching_engine {
 
-void MatchingEngine::run() {
-  while (true) {
-    order::Order new_order {order_queue_->pop()};
-    place_order(new_order);
+void MatchingEngine::run(std::stop_token stoken) {
+  while (!stoken.stop_requested()) {
+    std::optional<order::Order> new_order {operation_queue_->pop(stoken)};
+    if (!new_order) {
+      break;
+    }
+    place_order(new_order.value());
   }
 }
 

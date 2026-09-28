@@ -25,7 +25,7 @@ public:
   std::optional<order::Order> match_order(order::Order order) {
     bool valid_orders_available {
       !order_levels_.empty() and
-      !comparator(order_levels_.top(), order.price)
+      !comp_(order_levels_.top(), order.price)
     };
     while (valid_orders_available) {
       order_level_t level {order_levels_.top()};
@@ -65,7 +65,7 @@ public:
 
       valid_orders_available = (
         !order_levels_.empty() and
-        !comparator(order_levels_.top(), order.price)
+        !comp_(order_levels_.top(), order.price)
       );
 
     }
@@ -94,6 +94,7 @@ private:
   std::priority_queue<order_level_t, std::vector<order_level_t>, comparator> order_levels_ {};
   std::unordered_map<order_level_t, std::list<order::Order>> level_to_orders_ {};
   std::unordered_map<order_id_t, order_node_t> id_to_order_ {};
+  comparator comp_ {};
 };
 
 }

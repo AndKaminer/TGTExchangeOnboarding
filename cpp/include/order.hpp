@@ -1,8 +1,12 @@
 #pragma once
 
-#include <cstdint>
+#include <uuid/uuid.h>
+#include <atomic>
 
 namespace order {
+
+using order_id_t = std::uintptr_t;
+
 
 enum class OrderSide {
   SELL,
@@ -10,10 +14,19 @@ enum class OrderSide {
 };
 
 struct Order {
-  const std::uintptr_t id {reinterpret_cast<std::uintptr_t>(this)}; // use memory address as unique id for the aura
+  Order(OrderSide side_p, unsigned int price_p, unsigned int quantity_p) :
+  side{side_p}, price{price_p}, quantity{quantity_p} {
+  }
+
+  
+  const order_id_t id {++order_counter};
   const OrderSide side {OrderSide::BUY};
   const unsigned int price {0};
   unsigned int quantity {0};
+
+private:
+  inline static std::atomic<order_id_t> order_counter {0};
+
   };
 
 };
