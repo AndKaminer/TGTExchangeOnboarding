@@ -25,7 +25,7 @@ public:
 
 private:
   void place_order(order::Order order);
-  bool cancel_order(order::order_id_t id);
+  void cancel_order(order::Cancel cancel);
 
   buy_book_t buy_orders_;
   sell_book_t sell_orders_;

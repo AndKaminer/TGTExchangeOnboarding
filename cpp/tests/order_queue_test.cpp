@@ -159,6 +159,33 @@ TEST_F(SellBookTest, CancelTwiceThrows) {
   EXPECT_THROW(book_.cancel_order(resting.id), std::logic_error);
 }
 
+TEST_F(SellBookTest, HasOrderTracksRestingOrders) {
+  Order resting {sell(100, 10)};
+  EXPECT_FALSE(book_.has_order(resting.id));
+
+  book_.insert_order(resting);
+  EXPECT_TRUE(book_.has_order(resting.id));
+
+  book_.cancel_order(resting.id);
+  EXPECT_FALSE(book_.has_order(resting.id));
+}
+
+TEST_F(SellBookTest, HasOrderFalseAfterFullFill) {
+  Order resting {sell(100, 10)};
+  book_.insert_order(resting);
+  book_.match_order(buy(100, 10));
+
+  EXPECT_FALSE(book_.has_order(resting.id));
+}
+
+TEST_F(SellBookTest, HasOrderTrueAfterPartialFill) {
+  Order resting {sell(100, 10)};
+  book_.insert_order(resting);
+  book_.match_order(buy(100, 4));
+
+  EXPECT_TRUE(book_.has_order(resting.id));
+}
+
 TEST_F(SellBookTest, LevelCanBeReusedAfterEmptying) {
   book_.insert_order(sell(100, 5));
   EXPECT_FALSE(book_.match_order(buy(100, 5)).has_value());

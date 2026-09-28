@@ -96,6 +96,10 @@ public:
     level_list.push_back(order);
     id_to_order_[order.id] = std::prev(level_list.end());
   }
+
+  bool has_order(order::order_id_t id) {
+    return id_to_order_.contains(id);
+  }
   
 private:
   std::priority_queue<order_level_t, std::vector<order_level_t>, comparator> order_levels_ {};

@@ -1,4 +1,5 @@
 #include "api_controller.hpp"
+#include "drogon/HttpRequest.h"
 #include "drogon/HttpResponse.h"
 #include "drogon/HttpTypes.h"
 #include "order.hpp"
@@ -67,7 +68,19 @@ void ApiController::place_order(const drogon::HttpRequestPtr& request, callback_
 
 void ApiController::cancel_order(const drogon::HttpRequestPtr& request, callback_t&& callback,
                                  order::order_id_t id) {
-  order_queue_ptr_->push(order::Cancel {id});
+  order_queue_ptr_->push(
+    order::Cancel {
+      id,
+      [callback = std::move(callback)](bool success) {
+        drogon::HttpResponsePtr response {drogon::HttpResponse::newHttpResponse()};
+        if (!success) {
+          response->setStatusCode(drogon::k404NotFound);
+        }
+
+        callback(response);
+      }
+    }
+  );
 }
 
 void ApiController::get_book(const drogon::HttpRequestPtr& request, callback_t&& callback) {

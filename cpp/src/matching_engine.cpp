@@ -1,5 +1,5 @@
 #include "matching_engine.hpp"
-#include "order_queue.hpp"
+#include "order.hpp"
 #include <optional>
 #include <stop_token>
 #include <variant>
@@ -15,7 +15,7 @@ void MatchingEngine::run(std::stop_token stoken) {
     if (std::holds_alternative<order::Order>(new_operation.value())) {
       place_order(std::get<order::Order>(new_operation.value()));
     } else {
-      cancel_order(std::get<order::Cancel>(new_operation.value()).id_);
+      cancel_order(std::get<order::Cancel>(new_operation.value()));
     }
   }
 }
@@ -34,8 +34,22 @@ void MatchingEngine::place_order(order::Order order) {
   }
 }
 
-bool MatchingEngine::cancel_order(order::order_id_t id) {
-  return true;
+void MatchingEngine::cancel_order(order::Cancel cancel) {
+  if (sell_orders_.has_order(cancel.id_)) {
+    sell_orders_.cancel_order(cancel.id_);
+    cancel.callback_(true);
+    return;
+  }
+
+  if (buy_orders_.has_order(cancel.id_)) {
+    buy_orders_.cancel_order(cancel.id_);
+    cancel.callback_(true);
+    return;
+  }
+
+  cancel.callback_(false);
+
+
 }
 
 };

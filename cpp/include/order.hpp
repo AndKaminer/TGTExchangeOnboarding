@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <uuid/uuid.h>
 #include <atomic>
 
@@ -30,8 +31,10 @@ private:
   };
 
 struct Cancel {
-  explicit Cancel(order_id_t id) : id_{id} {}
+  explicit Cancel(order_id_t id, std::function<void(bool)> callback)
+  : id_{id}, callback_(callback) {}
   const order_id_t id_;
+  const std::function<void(bool)> callback_;
 };
 
 };

@@ -30,6 +30,8 @@ if(EXCHANGE_BUILD_TESTS)
 
   add_executable(matching_engine_tests
     cpp/tests/order_queue_test.cpp
+    cpp/tests/matching_engine_test.cpp
+    cpp/src/matching_engine.cpp
   )
   target_include_directories(matching_engine_tests PRIVATE cpp/include)
   target_link_libraries(matching_engine_tests PRIVATE GTest::gtest_main)
