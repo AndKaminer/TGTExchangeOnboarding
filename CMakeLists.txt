@@ -17,6 +17,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_executable(application
   cpp/src/main.cpp
   cpp/src/api_controller.cpp
+  cpp/src/market_data_controller.cpp
   cpp/src/matching_engine.cpp
 )
 target_include_directories(application PRIVATE cpp/include)

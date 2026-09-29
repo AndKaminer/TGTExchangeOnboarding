@@ -2,6 +2,7 @@
 #include <thread>
 
 #include "api_controller.hpp"
+#include "market_data_controller.hpp"
 #include "matching_engine.hpp"
 
 int main() {
@@ -19,6 +20,7 @@ int main() {
   );
   
   drogon::app().registerController(std::make_shared<api::ApiController>(order_queue_ptr));
+  drogon::app().registerController(std::make_shared<api::MarketDataController>());
   drogon::app()
     .addListener("0.0.0.0", 8080)
     .run();
